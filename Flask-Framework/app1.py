@@ -1,5 +1,5 @@
 # from crypt import methods
-from flask import Flask, redirect, url_for, render_template, request
+from flask import Flask, redirect, url_for, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from requests import session
 from sqlalchemy import Column, null
@@ -31,8 +31,6 @@ class dataTable(db.Model):
 def home():
     if request.method == "POST":   
         value = request.form["obtained"]
-        # newValue = dataTable(id = 1, Remote = value)
-        # newValue = dataTable(id = 1)
         newValue = dataTable.query.filter_by(id = 1).first()
         print(newValue.Remote)
         print(newValue.id)
@@ -49,6 +47,14 @@ def home():
         memValue = dataTable.query.filter_by(id = 1).first()
         print(memValue.Remote)
         return render_template("index.html", value= memValue.Remote)
+
+@app.route("/jsonrequest")         
+def jsonrequest():
+    # Read data from the data space from a specific id and store the read row "id" and "remote" columns in 
+    newValue = dataTable.query.filter_by(id = 1).first()         
+    return jsonify({"ID" : newValue.id,"Value" : newValue.Remote})
+
+
 
 @app.route("/test")         
 def test():         
