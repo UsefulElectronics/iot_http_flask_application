@@ -2434,8 +2434,6 @@ Discarded input sections
  .rodata        0x0000000000000000      0x1dd ./json/nxjson.o
  .text.create_json
                 0x0000000000000000       0x80 ./json/nxjson.o
- .text.nx_json_free
-                0x0000000000000000       0x4c ./json/nxjson.o
  .text.unicode_to_utf8
                 0x0000000000000000      0x126 ./json/nxjson.o
  .data.nx_json_unicode_to_utf8
@@ -2457,9 +2455,11 @@ Discarded input sections
                 0x0000000000000000       0x46 ./json/nxjson.o
  .text.nx_json_item
                 0x0000000000000000       0x3a ./json/nxjson.o
+ .text.nx_json_free
+                0x0000000000000000       0x4c ./json/nxjson.o
  .rodata.__func__.0
                 0x0000000000000000        0xc ./json/nxjson.o
- .debug_info    0x0000000000000000      0xf52 ./json/nxjson.o
+ .debug_info    0x0000000000000000      0xf56 ./json/nxjson.o
  .debug_abbrev  0x0000000000000000      0x35a ./json/nxjson.o
  .debug_aranges
                 0x0000000000000000       0x78 ./json/nxjson.o

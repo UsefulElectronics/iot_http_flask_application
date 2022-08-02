@@ -66,24 +66,7 @@ static nx_json *create_json(nx_json_type type, const char *key, nx_json *parent)
 	return js;
 }
 
-void nx_json_free(const nx_json *js)
-{
-	if (!js)
-	{
-		return;
-	}
-	if (js->type == NX_JSON_OBJECT || js->type == NX_JSON_ARRAY)
-	{
-		nx_json *p = js->children.first;
-		nx_json *p1;
-		while (p) {
-			p1 = p->next;
-			nx_json_free (p);
-			p = p1;
-		}
-	}
-	NX_JSON_FREE(js);
-}
+
 
 static int unicode_to_utf8(unsigned int codepoint, char *p, char **endp)
 {
@@ -414,6 +397,24 @@ const nx_json *nx_json_item(const nx_json *json, int idx)
 	return NULL;
 }
 
+void nx_json_free(const nx_json *js)
+{
+	if (!js)
+	{
+		return;
+	}
+	if (js->type == NX_JSON_OBJECT || js->type == NX_JSON_ARRAY)
+	{
+		nx_json *p = js->children.first;
+		nx_json *p1;
+		while (p) {
+			p1 = p->next;
+			nx_json_free (p);
+			p = p1;
+		}
+	}
+	NX_JSON_FREE(js);
+}
 
 #ifdef  __cplusplus
 }
