@@ -93,12 +93,22 @@ int main(void)
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
 
+  wifiModuleInit();
+
+  HAL_UARTEx_ReceiveToIdle_DMA(&huart1, (uint8_t*) hWifiModule.rxBuffer, WIFI_MODULE_BUFFER_SIZE);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  if(hWifiModule.controlFlags.flag.packetToTransmit)
+	  {
+		  HAL_UART_Transmit_DMA(&huart1, (uint8_t*) hWifiModule.txBuffer, hWifiModule.txPacketSize);
+		  hWifiModule.controlFlags.flag.packetToTransmit = DISABLE;
+	  }
+
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -225,6 +235,12 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
+{
+	hWifiModule.controlFlags.flag.packetReceived = ENABLE;
+	HAL_UARTEx_ReceiveToIdle_DMA(&huart1, (uint8_t*) hWifiModule.rxBuffer, WIFI_MODULE_BUFFER_SIZE);
+	 __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
+}
 
 /* USER CODE END 4 */
 

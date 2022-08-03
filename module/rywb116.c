@@ -13,11 +13,11 @@
 
 /* INCLUDES ------------------------------------------------------------------*/
 #include "rywb116.h"
-
+#include "stm32f4xx_hal.h"
 /* PRIVATE STRUCTRES ---------------------------------------------------------*/
 
 /* VARIABLES -----------------------------------------------------------------*/
-
+hWifiModule_t hWifiModule;
 /* DEFINITIONS ---------------------------------------------------------------*/
 
 /* MACROS --------------------------------------------------------------------*/
@@ -25,6 +25,15 @@
 /* PRIVATE FUNCTIONS DECLARATION ---------------------------------------------*/
 
 /* FUNCTION PROTOTYPES -------------------------------------------------------*/
+void wifiModuleInit(void)
+{
+	memset(&hWifiModule, 0, sizeof(hWifiModule_t));
 
+	HAL_GPIO_WritePin(WIFI_MODULE_RESET_GPIO_PORT, WIFI_MODULE_RESET_PIN, ENABLE);
+}
 
+void wifiModuleConfigSequence(void)
+{
+
+}
 /**************************  Useful Electronics  ****************END OF FILE***/

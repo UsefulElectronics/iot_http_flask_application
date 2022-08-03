@@ -15,7 +15,11 @@
 
 
 /* INCLUDES ------------------------------------------------------------------*/
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
 
+#include "stm32f4xx_hal.h"
 /* MACROS --------------------------------------------------------------------*/
 #define AT_FIRMWARE_MENU_OPEN		  	"\x1C"
 #define AT_FIRMWARE_MENU_CONFIRM		"U"
@@ -28,13 +32,41 @@
 #define AT_PASSWORD_SET					"at+rsi_psk=1,"			//Must be appended with the SSID password and terminator characters
 #define AT_IP_CONFIG_SET				"at+rsi_ipconf=1,0,0,0\r\n"
 #define AT_TERMINATOR					"\r\n"
+
+#define WIFI_MODULE_BUFFER_SIZE			300
+
+#define WIFI_MODULE_RESET_PIN			GPIO_PIN_14
+#define WIFI_MODULE_RESET_GPIO_PORT		GPIOB
+
+
 /* ENUMORATIONS --------------------------------------------------------------*/
 
 /* STRUCTURES & TYPEDEFS -----------------------------------------------------*/
 
-/* VARIABLES -----------------------------------------------------------------*/
+typedef union
+{	uint8_t all;
+	struct
+	{
+		uint8_t packetReceived		:1,
+				packetToTransmit	:1,
+				reserved			:7;
 
+	}flag;
+
+}controlFlags_t;
+
+typedef struct
+{
+	controlFlags_t	controlFlags;
+	uint16_t txPacketSize;
+	uint16_t rxPacketSize;
+	char txBuffer[WIFI_MODULE_BUFFER_SIZE];
+	char rxBuffer[WIFI_MODULE_BUFFER_SIZE];
+}hWifiModule_t;
+/* VARIABLES -----------------------------------------------------------------*/
+extern hWifiModule_t hWifiModule;
 /* FUNCTIONS DECLARATION -----------------------------------------------------*/
+void wifiModuleInit(void);
 
 
 
