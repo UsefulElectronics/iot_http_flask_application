@@ -102,10 +102,27 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  if(hWifiModule.controlFlags.flag.packetToTransmit)
+	  if(hWifiModule.controlFlags.flag.configurationFase && hWifiModule.txTimer > 1000)
+	  {
+		  wifiModuleConfigSequence();
+
+		  hWifiModule.txTimer = HAL_GetTick();
+	  }
+
+	  if(hWifiModule.controlFlags.flag.packetToTransmit && hWifiModule.txTimer > 1000)
 	  {
 		  HAL_UART_Transmit_DMA(&huart1, (uint8_t*) hWifiModule.txBuffer, hWifiModule.txPacketSize);
+
 		  hWifiModule.controlFlags.flag.packetToTransmit = DISABLE;
+
+		  hWifiModule.txTimer = HAL_GetTick();
+	  }
+
+	  if(hWifiModule.controlFlags.flag.packetReceived && hWifiModule.rxTimer > 1000)
+	  {
+		  hWifiModule.controlFlags.flag.packetReceived = DISABLE;
+
+		  hWifiModule.rxTimer = HAL_GetTick();
 	  }
 
 
