@@ -32,6 +32,7 @@ extern "C" {
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "rywb116.h"
+#include "nxjson.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -57,6 +58,10 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define BLUE_LED_Pin GPIO_PIN_13
+#define BLUE_LED_GPIO_Port GPIOC
+#define BUTTON_Pin GPIO_PIN_0
+#define BUTTON_GPIO_Port GPIOA
 #define MODULE_RESET_Pin GPIO_PIN_14
 #define MODULE_RESET_GPIO_Port GPIOB
 #define LED3_Pin GPIO_PIN_5

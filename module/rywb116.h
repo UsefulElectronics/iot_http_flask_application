@@ -33,11 +33,13 @@
 #define	AT_SSID_JOIN					"at+rsi_join="
 #define	AT_SSID_JOIN_PARAMETERS			",0,2,2,2,1000,0,0\r\n"
 #define AT_IP_CONFIG_SET				"at+rsi_ipconf=1,0,0,0\r\n"
-#define AT_HTTP_GET						"at+rsi_ipconf=1,0,0,0\r\n"
+#define AT_HTTP_GET						"at+rsi_httpget=0,5000,,,,192.168.1.107,/jsonrequest,\r\n"
+#define AT_HTTP_RESPONSE_HEADER			"AT+RSI_HTTPRSP="
 #define AT_TERMINATOR					"\r\n"
 
 #define WIFI_MODULE_BUFFER_SIZE			300
 
+#define AT_HTTP_RESPONSE_HEADER_SIZE	15
 #define WIFI_MODULE_RESET_PIN			GPIO_PIN_14
 #define WIFI_MODULE_RESET_GPIO_PORT		GPIOB
 
@@ -53,7 +55,9 @@ typedef union
 		uint8_t packetReceived		:1,
 				packetToTransmit	:1,
 				configurationFase	:1,
-				reserved			:7;
+				configurationNotify	:1,
+				httpGetNotify		:1,
+				reserved			:3;
 
 	}flag;
 
@@ -64,6 +68,7 @@ typedef struct
 	controlFlags_t	controlFlags;
 	uint16_t txPacketSize;
 	uint16_t rxPacketSize;
+	uint32_t httpTimer;
 	uint32_t txTimer;
 	uint32_t rxTimer;
 	char txBuffer[WIFI_MODULE_BUFFER_SIZE];
@@ -72,8 +77,9 @@ typedef struct
 /* VARIABLES -----------------------------------------------------------------*/
 extern hWifiModule_t hWifiModule;
 /* FUNCTIONS DECLARATION -----------------------------------------------------*/
-void wifiModuleInit(void);
-void wifiModuleConfigSequence(void);
+void wifiModuleInit					(void);
+void wifiModuleConfigSequence		(void);
+void wifiModuleHttpGetRequest		(void);
 
 #endif /* RYWB116_H_ */
 

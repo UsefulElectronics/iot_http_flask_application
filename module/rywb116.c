@@ -36,6 +36,8 @@ void wifiModuleInit(void)
 
 	hWifiModule.controlFlags.flag.configurationFase = ENABLE;
 
+	hWifiModule.controlFlags.flag.configurationNotify = ENABLE;
+
 	HAL_GPIO_WritePin(WIFI_MODULE_RESET_GPIO_PORT, WIFI_MODULE_RESET_PIN, ENABLE);
 }
 /**
@@ -51,87 +53,86 @@ void wifiModuleConfigSequence(void)
 		case 0:
 			hWifiModule.controlFlags.flag.packetToTransmit = ENABLE;
 
-			strcpy(hWifiModule.rxBuffer, AT_FIRMWARE_MENU_OPEN);
+			strcpy(hWifiModule.txBuffer, AT_FIRMWARE_MENU_OPEN);
 
-			hWifiModule.rxPacketSize = 1;
+			hWifiModule.txPacketSize = 1;
 
 			++configStages;
 			break;
 		case 1:
 			hWifiModule.controlFlags.flag.packetToTransmit = ENABLE;
 
-			strcpy(hWifiModule.rxBuffer, AT_FIRMWARE_MENU_CONFIRM);
+			strcpy(hWifiModule.txBuffer, AT_FIRMWARE_MENU_CONFIRM);
 
-			hWifiModule.rxPacketSize = 1;
+			hWifiModule.txPacketSize = 1;
 
 			++configStages;
 			break;
 		case 2:
 			hWifiModule.controlFlags.flag.packetToTransmit = ENABLE;
 
-			strcpy(hWifiModule.rxBuffer, AT_DEFAULT_WiFi_FIRMWARE);
+			strcpy(hWifiModule.txBuffer, AT_DEFAULT_WiFi_FIRMWARE);
 
-			hWifiModule.rxPacketSize = 1;
+			hWifiModule.txPacketSize = 1;
 
 			++configStages;
 			break;
 		case 3:
 			hWifiModule.controlFlags.flag.packetToTransmit = ENABLE;
 
-			strcpy(hWifiModule.rxBuffer, AT_OPERAND_SETTINGS);
+			strcpy(hWifiModule.txBuffer, AT_OPERAND_SETTINGS);
 
-			hWifiModule.rxPacketSize = strlen(AT_OPERAND_SETTINGS);
+			hWifiModule.txPacketSize = strlen(AT_OPERAND_SETTINGS);
 
 			++configStages;
 			break;
 		case 4:
 			hWifiModule.controlFlags.flag.packetToTransmit = ENABLE;
 
-			strcpy(hWifiModule.rxBuffer, AT_BAND_SELECT);
+			strcpy(hWifiModule.txBuffer, AT_BAND_SELECT);
 
-			hWifiModule.rxPacketSize = strlen(AT_BAND_SELECT);
+			hWifiModule.txPacketSize = strlen(AT_BAND_SELECT);
 
 			++configStages;
 			break;
 		case 5:
 			hWifiModule.controlFlags.flag.packetToTransmit = ENABLE;
 
-			strcpy(hWifiModule.rxBuffer, AT_FRAME_SET);
+			strcpy(hWifiModule.txBuffer, AT_FRAME_SET);
 
-			hWifiModule.rxPacketSize = strlen(AT_FRAME_SET);
+			hWifiModule.txPacketSize = strlen(AT_FRAME_SET);
 
 			++configStages;
 			break;
 		case 6:
 			hWifiModule.controlFlags.flag.packetToTransmit = ENABLE;
 
-			strcpy(hWifiModule.rxBuffer, AT_SETTINGS_INIT);
+			strcpy(hWifiModule.txBuffer, AT_SETTINGS_INIT);
 
-			hWifiModule.rxPacketSize = strlen(AT_SETTINGS_INIT);
+
+			hWifiModule.txPacketSize = strlen(AT_SETTINGS_INIT);
 
 			++configStages;
 			break;
 		case 7:
-
 			hWifiModule.controlFlags.flag.packetToTransmit = ENABLE;
 
-			strcpy(hWifiModule.rxBuffer, AT_PASSWORD_SET);
+			strcpy(hWifiModule.txBuffer, AT_SSID_SCAN);
 
-			strcat(hWifiModule.rxBuffer, SSID_PASSWORD);
-
-			strcat(hWifiModule.rxBuffer, AT_TERMINATOR);
-
-			hWifiModule.rxPacketSize = strlen(hWifiModule.rxBuffer);
-
+			hWifiModule.txPacketSize = strlen(AT_SSID_SCAN);
 			++configStages;
 			break;
-
 		case 8:
+
 			hWifiModule.controlFlags.flag.packetToTransmit = ENABLE;
 
-			strcpy(hWifiModule.rxBuffer, AT_IP_CONFIG_SET);
+			strcpy(hWifiModule.txBuffer, AT_PASSWORD_SET);
 
-			hWifiModule.rxPacketSize = strlen(AT_IP_CONFIG_SET);
+			strcat(hWifiModule.txBuffer, SSID_PASSWORD);
+
+			strcat(hWifiModule.txBuffer, AT_TERMINATOR);
+
+			hWifiModule.txPacketSize = strlen(hWifiModule.txBuffer);
 
 			++configStages;
 			break;
@@ -139,13 +140,25 @@ void wifiModuleConfigSequence(void)
 		case 9:
 			hWifiModule.controlFlags.flag.packetToTransmit = ENABLE;
 
-			strcpy(hWifiModule.rxBuffer, AT_SSID_JOIN);
+			strcpy(hWifiModule.txBuffer, AT_SSID_JOIN);
 
-			strcat(hWifiModule.rxBuffer, SSID_NAME);
+			strcat(hWifiModule.txBuffer, SSID_NAME);
 
-			strcpy(hWifiModule.rxBuffer, AT_SSID_JOIN_PARAMETERS);
+			strcat(hWifiModule.txBuffer, AT_SSID_JOIN_PARAMETERS);
 
-			hWifiModule.rxPacketSize = strlen(hWifiModule.rxBuffer);
+			hWifiModule.txPacketSize = strlen(hWifiModule.txBuffer);
+
+//			hWifiModule.controlFlags.flag.configurationFase = DISABLE;
+
+			++configStages;
+			break;
+
+		case 10:
+			hWifiModule.controlFlags.flag.packetToTransmit = ENABLE;
+
+			strcpy(hWifiModule.txBuffer, AT_IP_CONFIG_SET);
+
+			hWifiModule.txPacketSize = strlen(AT_IP_CONFIG_SET);
 			//Stop Configuration sequence
 			hWifiModule.controlFlags.flag.configurationFase = DISABLE;
 
@@ -154,5 +167,14 @@ void wifiModuleConfigSequence(void)
 
 
 	}
+}
+
+void wifiModuleHttpGetRequest(void)
+{
+	hWifiModule.controlFlags.flag.packetToTransmit = ENABLE;
+
+	strcpy(hWifiModule.txBuffer, AT_HTTP_GET);
+
+	hWifiModule.txPacketSize = strlen(AT_HTTP_GET);
 }
 /**************************  Useful Electronics  ****************END OF FILE***/

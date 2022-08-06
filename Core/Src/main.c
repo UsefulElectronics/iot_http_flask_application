@@ -92,7 +92,7 @@ int main(void)
   MX_DMA_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-
+  nx_json *json = NULL;
   wifiModuleInit();
 
   HAL_UARTEx_ReceiveToIdle_DMA(&huart1, (uint8_t*) hWifiModule.rxBuffer, WIFI_MODULE_BUFFER_SIZE);
@@ -102,14 +102,58 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  if(hWifiModule.controlFlags.flag.configurationFase && hWifiModule.txTimer > 1000)
+
+	/**
+	 * Module configuration task
+	 */
+	  if(hWifiModule.controlFlags.flag.configurationFase && hWifiModule.controlFlags.flag.configurationNotify)
 	  {
 		  wifiModuleConfigSequence();
 
-		  hWifiModule.txTimer = HAL_GetTick();
+		  HAL_GPIO_TogglePin(BLUE_LED_GPIO_Port, BLUE_LED_Pin);
+
+		  hWifiModule.controlFlags.flag.configurationNotify = DISABLE;
+
+		  hWifiModule.httpTimer = HAL_GetTick();
+	  }
+	/**
+	 * Make HTTP GET request periodically to obtain JSON string
+	 */
+	  if(0 == hWifiModule.controlFlags.flag.configurationFase && (HAL_GetTick() - hWifiModule.httpTimer > 1000))
+	  {
+		  wifiModuleHttpGetRequest();
+
+		  hWifiModule.httpTimer = HAL_GetTick();
+	  }
+	  /**
+	   *
+	   */
+	  if(hWifiModule.controlFlags.flag.httpGetNotify)
+	  {
+		  uint8_t offset = 0;
+		  uint8_t value = 0;
+		  offset = strlen(AT_HTTP_RESPONSE_HEADER) + 12;
+
+		  json = nx_json_parse_utf8((char*)(hWifiModule.rxBuffer + offset));
+
+		  value = nx_json_get(json, "Value")->text_value[0] - '0';
+
+		  if(value)
+		  {
+			  HAL_GPIO_WritePin(BLUE_LED_GPIO_Port, BLUE_LED_Pin, RESET);
+		  }
+		  else
+		  {
+			  HAL_GPIO_WritePin(BLUE_LED_GPIO_Port, BLUE_LED_Pin, SET);
+		  }
+
+		  hWifiModule.controlFlags.flag.httpGetNotify = DISABLE;
 	  }
 
-	  if(hWifiModule.controlFlags.flag.packetToTransmit && hWifiModule.txTimer > 1000)
+	/**
+	 * UART transmission task. It works only when the UART TX buffer is filled
+	 */
+	  if(hWifiModule.controlFlags.flag.packetToTransmit && (HAL_GetTick() - hWifiModule.txTimer > 1000))
 	  {
 		  HAL_UART_Transmit_DMA(&huart1, (uint8_t*) hWifiModule.txBuffer, hWifiModule.txPacketSize);
 
@@ -117,12 +161,23 @@ int main(void)
 
 		  hWifiModule.txTimer = HAL_GetTick();
 	  }
-
-	  if(hWifiModule.controlFlags.flag.packetReceived && hWifiModule.rxTimer > 1000)
+	/**
+	 * UART RX task. After UART RX callback is received and the UART RX buffer is filled, this task is executed
+	 */
+	  if(hWifiModule.controlFlags.flag.packetReceived && (HAL_GetTick() - hWifiModule.rxTimer > 1000))
 	  {
 		  hWifiModule.controlFlags.flag.packetReceived = DISABLE;
 
 		  hWifiModule.rxTimer = HAL_GetTick();
+		  //Check if the received packet is a http response packet
+		  if(0 == memcmp(hWifiModule.rxBuffer, AT_HTTP_RESPONSE_HEADER, AT_HTTP_RESPONSE_HEADER_SIZE))
+		  {
+			  hWifiModule.controlFlags.flag.httpGetNotify = ENABLE;
+		  }
+		  else
+		  {
+			  hWifiModule.controlFlags.flag.configurationNotify = ENABLE;
+		  }
 	  }
 
 
@@ -236,11 +291,28 @@ static void MX_GPIO_Init(void)
   GPIO_InitTypeDef GPIO_InitStruct = {0};
 
   /* GPIO Ports Clock Enable */
-  __HAL_RCC_GPIOB_CLK_ENABLE();
+  __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(BLUE_LED_GPIO_Port, BLUE_LED_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, MODULE_RESET_Pin|LED3_Pin|LED2_Pin|LED1_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin : BLUE_LED_Pin */
+  GPIO_InitStruct.Pin = BLUE_LED_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(BLUE_LED_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : BUTTON_Pin */
+  GPIO_InitStruct.Pin = BUTTON_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(BUTTON_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : MODULE_RESET_Pin LED3_Pin LED2_Pin LED1_Pin */
   GPIO_InitStruct.Pin = MODULE_RESET_Pin|LED3_Pin|LED2_Pin|LED1_Pin;
@@ -255,7 +327,11 @@ static void MX_GPIO_Init(void)
 void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
 	hWifiModule.controlFlags.flag.packetReceived = ENABLE;
+
 	HAL_UARTEx_ReceiveToIdle_DMA(&huart1, (uint8_t*) hWifiModule.rxBuffer, WIFI_MODULE_BUFFER_SIZE);
+
+	hWifiModule.rxPacketSize = Size;
+
 	 __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
 }
 
