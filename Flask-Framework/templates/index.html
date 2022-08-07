@@ -5,26 +5,71 @@
 HOME PAGE
 {% endblock %}
 <!-- Blocks can be substituted inside the base html file -->
-{% block content%}
-<h1>USEFUL ELECTRONICS </h1>
-<!--<h1 style="background-color: #0BF4F6;"> USEFUL ELECTRONICS</h1>-->
-{% endblock %}
 
-{% block test%}
-<style>
-h1 {color:blue}
-p {color:rgb(255, 0, 0)}
-</style>
-<h1> who is this</h1>
-<h2> hello</h2>
-<p> paragraph</p>
-{% endblock %}
+
+
+<!-- {% block test%} -->
+<!-- <style> -->
+<!-- h1 {color:blue} -->
+<!-- p {color:rgb(255, 0, 0)} -->
+<!-- </style> -->
+<!-- <h1> who is this</h1> -->
+<!-- <h2> hello</h2> -->
+<!-- <p> paragraph</p> -->
+<!-- {% endblock %} -->
 
 {% block data%}
 <form action="#" method="POST">
+    <style>
+        .button 
+        {
+          border: none;
+          color: white;
+          padding: 64px 128px;
+          text-align: center;
+          text-decoration: none;
+          display: inline-block;
+          font-size: 32px;
+          margin: 4px 2px;
+          transition-duration: 0.1s;
+          cursor: pointer;
+        }
+        
+        .button1 
+        {
+          background-color: white;
+          color: black;
+          border: 2px solid #4CAF50;
+        }
+        
+        .button1:hover {
+          background-color: #4CAF50;
+          color: white;
+        }
+        
+        .button2 {
+          background-color: white;
+          color: black;
+          border: 2px solid #f30707;
+        }
+        
+        .button2:hover {
+          background-color: #f30707;
+          color: white;
+        }
+        
+        </style>
     <p>Enter value</p>
-    <p><input type="text" name="obtained" /></p>
-    <!-- <p><input type="submit" name="submit" /></p> -->
+    <!-- <p><input type="text" name="obtained" /></p> -->
+    <!-- <p><input type="submit" name="obtained" /></p> -->
+    <!-- <button class="button button1">ON</button> -->
+    {% if value != "0" %}
+    <button type="submit"  class="button button1"  name="obtained" value="0">ON </button>
+    <!-- <p><input type="submit"  class="button button1"  name="obtained" value="0"  /></p> -->
+    {% elif value == "0" %}
+    <button type="submit"  class="button button2"  name="obtained" value="1">OFF </button>
+    <!-- <p><input type="submit"  class="button button2"  name="obtained" value="1" /></p> -->
+    {% endif%}
 </form>
 {% endblock %}
 
