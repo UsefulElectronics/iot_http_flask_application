@@ -16,6 +16,8 @@ SQLalchemy is used for database management to store data received over HTTP POST
 JSON is is used to come over the big HTML header and extract only the necessary data from the HTTP server. NX_JSON library is used by STM32 to parse JSON objects. 
 
 
+![Circuit Diagram](https://github.com/UsefulElectronics/iot_http_flask_application/blob/main/circuit%20diagram/iot%20application.jpg)
+
 
 ***
 
