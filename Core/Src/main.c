@@ -164,7 +164,7 @@ int main(void)
 	/**
 	 * UART RX task. After UART RX callback is received and the UART RX buffer is filled, this task is executed
 	 */
-	  if(hWifiModule.controlFlags.flag.packetReceived && (HAL_GetTick() - hWifiModule.rxTimer > 1000))
+	  if(hWifiModule.controlFlags.flag.packetReceived)
 	  {
 		  hWifiModule.controlFlags.flag.packetReceived = DISABLE;
 
