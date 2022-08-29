@@ -3,7 +3,7 @@
 ***
 ***
 
-Series Sponsor PCBWay Website. You can get extra free coupons using the link below:
+Tutorial Series Sponsor PCBWay Website. You can get extra free coupons using the link below:
 https://www.pcbway.com/setinvite.aspx?inviteid=582640
 
 ### [Tutorial Link](https://youtu.be/4AeZfL4Cmxk) On [![Build Status](https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/wardzx1) 

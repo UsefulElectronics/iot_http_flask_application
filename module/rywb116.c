@@ -48,10 +48,11 @@ void wifiModuleConfigSequence(void)
 {
 	static uint8_t configStages = 0;
 
+	memset(hWifiModule.txBuffer,0, WIFI_MODULE_BUFFER_SIZE);
+
 	switch(configStages)
 	{
 		case 0:
-			hWifiModule.controlFlags.flag.packetToTransmit = ENABLE;
 
 			strcpy(hWifiModule.txBuffer, AT_FIRMWARE_MENU_OPEN);
 
@@ -60,7 +61,6 @@ void wifiModuleConfigSequence(void)
 			++configStages;
 			break;
 		case 1:
-			hWifiModule.controlFlags.flag.packetToTransmit = ENABLE;
 
 			strcpy(hWifiModule.txBuffer, AT_FIRMWARE_MENU_CONFIRM);
 
@@ -69,7 +69,6 @@ void wifiModuleConfigSequence(void)
 			++configStages;
 			break;
 		case 2:
-			hWifiModule.controlFlags.flag.packetToTransmit = ENABLE;
 
 			strcpy(hWifiModule.txBuffer, AT_DEFAULT_WiFi_FIRMWARE);
 
@@ -78,7 +77,6 @@ void wifiModuleConfigSequence(void)
 			++configStages;
 			break;
 		case 3:
-			hWifiModule.controlFlags.flag.packetToTransmit = ENABLE;
 
 			strcpy(hWifiModule.txBuffer, AT_OPERAND_SETTINGS);
 
@@ -87,7 +85,6 @@ void wifiModuleConfigSequence(void)
 			++configStages;
 			break;
 		case 4:
-			hWifiModule.controlFlags.flag.packetToTransmit = ENABLE;
 
 			strcpy(hWifiModule.txBuffer, AT_BAND_SELECT);
 
@@ -96,7 +93,6 @@ void wifiModuleConfigSequence(void)
 			++configStages;
 			break;
 		case 5:
-			hWifiModule.controlFlags.flag.packetToTransmit = ENABLE;
 
 			strcpy(hWifiModule.txBuffer, AT_FRAME_SET);
 
@@ -105,7 +101,6 @@ void wifiModuleConfigSequence(void)
 			++configStages;
 			break;
 		case 6:
-			hWifiModule.controlFlags.flag.packetToTransmit = ENABLE;
 
 			strcpy(hWifiModule.txBuffer, AT_SETTINGS_INIT);
 
@@ -115,7 +110,6 @@ void wifiModuleConfigSequence(void)
 			++configStages;
 			break;
 		case 7:
-			hWifiModule.controlFlags.flag.packetToTransmit = ENABLE;
 
 			strcpy(hWifiModule.txBuffer, AT_SSID_SCAN);
 
@@ -123,8 +117,6 @@ void wifiModuleConfigSequence(void)
 			++configStages;
 			break;
 		case 8:
-
-			hWifiModule.controlFlags.flag.packetToTransmit = ENABLE;
 
 			strcpy(hWifiModule.txBuffer, AT_PASSWORD_SET);
 
@@ -138,7 +130,6 @@ void wifiModuleConfigSequence(void)
 			break;
 
 		case 9:
-			hWifiModule.controlFlags.flag.packetToTransmit = ENABLE;
 
 			strcpy(hWifiModule.txBuffer, AT_SSID_JOIN);
 
@@ -154,7 +145,6 @@ void wifiModuleConfigSequence(void)
 			break;
 
 		case 10:
-			hWifiModule.controlFlags.flag.packetToTransmit = ENABLE;
 
 			strcpy(hWifiModule.txBuffer, AT_IP_CONFIG_SET);
 
@@ -164,9 +154,9 @@ void wifiModuleConfigSequence(void)
 
 			++configStages;
 			break;
-
-
 	}
+
+	hWifiModule.controlFlags.flag.packetToTransmit = ENABLE;
 }
 
 void wifiModuleHttpGetRequest(void)

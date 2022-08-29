@@ -54,6 +54,9 @@ default.size.stdout \
 OBJDUMP_LIST += \
 iot_http_flask_application.list \
 
+OBJCOPY_BIN += \
+iot_http_flask_application.bin \
+
 
 # All Target
 all: main-build
@@ -77,12 +80,17 @@ iot_http_flask_application.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL
 	@echo 'Finished building: $@'
 	@echo ' '
 
+iot_http_flask_application.bin: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "iot_http_flask_application.bin"
+	@echo 'Finished building: $@'
+	@echo ' '
+
 # Other Targets
 clean:
-	-$(RM) default.size.stdout iot_http_flask_application.elf iot_http_flask_application.list iot_http_flask_application.map
+	-$(RM) default.size.stdout iot_http_flask_application.bin iot_http_flask_application.elf iot_http_flask_application.list iot_http_flask_application.map
 	-@echo ' '
 
-secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)
+secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST) $(OBJCOPY_BIN)
 
 fail-specified-linker-script-missing:
 	@echo 'Error: Cannot find the specified linker script. Check the linker settings in the build configuration.'
